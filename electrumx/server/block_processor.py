@@ -416,6 +416,7 @@ class BlockProcessor(object):
             for txin in tx.inputs:
                 if txin.is_generation():
                     continue
+
                 cache_value = spend_utxo(txin.prev_hash, txin.prev_idx)
                 undo_info_append(cache_value)
                 append_hashX(cache_value[:-12])
@@ -496,10 +497,11 @@ class BlockProcessor(object):
             for txin in reversed(tx.inputs):
                 if txin.is_generation():
                     continue
+
                 n -= undo_entry_len
                 undo_item = undo_info[n:n + undo_entry_len]
                 put_utxo(txin.prev_hash + s_pack('<H', txin.prev_idx),
-                         undo_item)
+                            undo_item)
                 touched.add(undo_item[:-12])
 
         assert n == 0
