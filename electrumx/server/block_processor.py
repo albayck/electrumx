@@ -494,7 +494,15 @@ class BlockProcessor(object):
 
             # Restore the inputs
             for txin in reversed(tx.inputs):
+<<<<<<< 7a2bf43c5056cab03dd13c0b3553008f4e260835
                 if is_gen_outpoint(txin.prev_hash, txin.prev_idx):
+=======
+<<<<<<< 6876c640cc086300edebdb241b496e23c72ff091
+                if txin.is_generation():
+=======
+                if txin.is_generation:
+>>>>>>> Improve generation inputs handling (@maff1989 improvements) (#3)
+>>>>>>> Improve generation inputs handling (@maff1989 improvements) (#3)
                     continue
                 n -= undo_entry_len
                 undo_item = undo_info[n:n + undo_entry_len]
@@ -652,7 +660,10 @@ class BlockProcessor(object):
         could be lost.
         '''
         self._caught_up_event = caught_up_event
-        await self._first_open_dbs()
+        async with TaskGroup() as group:
+            await group.spawn(self._first_open_dbs())
+            # Ensure cached_height is set
+            await group.spawn(self.daemon.height())
         try:
             async with TaskGroup() as group:
                 await group.spawn(self.prefetcher.main_loop(self.height))
