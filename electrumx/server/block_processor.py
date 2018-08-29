@@ -413,7 +413,7 @@ class BlockProcessor(object):
 
             # Spend the inputs
             for txin in tx.inputs:
-                if txin.is_generation():
+                if txin.is_generation:
                     continue
                 cache_value = spend_utxo(txin.prev_hash, txin.prev_idx)
                 undo_info_append(cache_value)
@@ -493,7 +493,11 @@ class BlockProcessor(object):
 
             # Restore the inputs
             for txin in reversed(tx.inputs):
+<<<<<<< bf279ceaea588de46d94e2ce93f38f797b2af9dc
                 if txin.is_generation():
+=======
+                if txin.is_generation:
+>>>>>>> Improve generation inputs handling (@maff1989 improvements) (#3)
                     continue
                 n -= undo_entry_len
                 undo_item = undo_info[n:n + undo_entry_len]
@@ -651,7 +655,10 @@ class BlockProcessor(object):
         could be lost.
         '''
         self._caught_up_event = caught_up_event
-        await self._first_open_dbs()
+        async with TaskGroup() as group:
+            await group.spawn(self._first_open_dbs())
+            # Ensure cached_height is set
+            await group.spawn(self.daemon.height())
         try:
             async with TaskGroup() as group:
                 await group.spawn(self.prefetcher.main_loop(self.height))
@@ -680,6 +687,7 @@ class DecredBlockProcessor(BlockProcessor):
             # A reorg in Decred can invalidate the previous block
             start -= 1
             count += 1
+<<<<<<< bf279ceaea588de46d94e2ce93f38f797b2af9dc
         return start, count
 
 
@@ -807,3 +815,6 @@ class LTORBlockProcessor(BlockProcessor):
                     add_touched(cache_value[:-12])
 
         self.tx_count -= len(txs)
+=======
+        return start, count
+>>>>>>> Improve generation inputs handling (@maff1989 improvements) (#3)
