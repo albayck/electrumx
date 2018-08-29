@@ -18,6 +18,7 @@ from functools import partial
 from aiorpcx import TaskGroup, run_in_thread
 
 import electrumx
+from electrumx.lib.tx import is_gen_outpoint
 from electrumx.server.daemon import DaemonError
 from electrumx.lib.hash import hash_to_hex_str, HASHX_LEN
 from electrumx.lib.util import chunks, class_logger
@@ -413,7 +414,7 @@ class BlockProcessor(object):
 
             # Spend the inputs
             for txin in tx.inputs:
-                if txin.is_generation:
+                if is_gen_outpoint(txin.prev_hash, txin.prev_idx):
                     continue
                 cache_value = spend_utxo(txin.prev_hash, txin.prev_idx)
                 undo_info_append(cache_value)
@@ -493,11 +494,7 @@ class BlockProcessor(object):
 
             # Restore the inputs
             for txin in reversed(tx.inputs):
-<<<<<<< e2d583dd146a8d61aff80202e7fcd137a84ff5aa
-                if txin.is_generation():
-=======
-                if txin.is_generation:
->>>>>>> Improve generation inputs handling (@maff1989 improvements) (#3)
+                if is_gen_outpoint(txin.prev_hash, txin.prev_idx):
                     continue
                 n -= undo_entry_len
                 undo_item = undo_info[n:n + undo_entry_len]
@@ -655,10 +652,7 @@ class BlockProcessor(object):
         could be lost.
         '''
         self._caught_up_event = caught_up_event
-        async with TaskGroup() as group:
-            await group.spawn(self._first_open_dbs())
-            # Ensure cached_height is set
-            await group.spawn(self.daemon.height())
+        await self._first_open_dbs()
         try:
             async with TaskGroup() as group:
                 await group.spawn(self.prefetcher.main_loop(self.height))
@@ -687,6 +681,7 @@ class DecredBlockProcessor(BlockProcessor):
             # A reorg in Decred can invalidate the previous block
             start -= 1
             count += 1
+<<<<<<< 09ae3686189092689500498fa1103fdd6b7ef2fb
 <<<<<<< e2d583dd146a8d61aff80202e7fcd137a84ff5aa
         return start, count
 
@@ -722,3 +717,6 @@ class NamecoinBlockProcessor(BlockProcessor):
 =======
         return start, count
 >>>>>>> Improve generation inputs handling (@maff1989 improvements) (#3)
+=======
+        return start, count
+>>>>>>> Revert "Improve generation inputs handling (@maff1989 improvements) (#3)"
