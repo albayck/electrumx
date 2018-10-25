@@ -297,26 +297,23 @@ class DeserializerAuxPow(Deserializer):
 
 
 class DeserializerZcoin(Deserializer):
+    TIME_MTP_ACTIVATE = 1529062072  # nTime for MTP to activate
+
     def read_header(self, height, static_header_size):
         start = self.cursor
         self.cursor += 68
         time = self._read_le_uint32()  # nTime
 
-        if time >= 1529062072:
-            self.cursor = start + static_header_size  # Normal Block size 80 bytes
-            self.cursor += 242828   # nVersionMTP + mtpHashValue + mtpReserved[2] + mtpHashData
+        if time >= self.TIME_MTP_ACTIVATE:
+            self.cursor = start + \
+                          static_header_size  # Normal Block size 80 bytes
+            self.cursor += 198964
+            # nVersionMTP + mtpHashValue + mtpReserved[2] + mtpHashData
             header_end = self.cursor
         else:
             header_end = static_header_size
         self.cursor = start
         return self._read_nbytes(header_end)
-
-    def read_tx_block(self):
-        '''Returns a list of (deserialized_tx, tx_hash) pairs.'''
-        read = self.read_tx_and_hash
-        # Some coins have excess data beyond the end of the transactions
-        return [read() for _ in range(self._read_varint())]
-
 
 class DeserializerAuxPowSegWit(DeserializerSegWit, DeserializerAuxPow):
     pass

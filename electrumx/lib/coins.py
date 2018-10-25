@@ -2310,16 +2310,13 @@ class Zcoin(Coin):
     WIF_BYTE = bytes.fromhex("d2")
     GENESIS_HASH = ('4381deb85b1b2c9843c222944b616d99'
                     '7516dcbd6a964e1eaf0def0830695233')
-    TX_COUNT = 667154
-    TX_COUNT_HEIGHT = 100266
-    TX_PER_BLOCK = 4000 # 2000 for 1MB block
-    IRC_PREFIX = None
+    TX_COUNT = 1
+    TX_COUNT_HEIGHT = 1
+    TX_PER_BLOCK = 1
     RPC_PORT = 8888
     REORG_LIMIT = 5000
     PEER_DEFAULT_PORTS = {'t': '50001', 's': '50002'}
-    PEERS = [
-        # 'host.example.com s t'
-    ]
+
 
 class ZcoinTestnet(Zcoin):
     SHORTNAME = "tXZC"
@@ -2329,7 +2326,8 @@ class ZcoinTestnet(Zcoin):
     P2PKH_VERBYTE = bytes.fromhex("41")
     P2SH_VERBYTES = [bytes.fromhex("b2")]
     WIF_BYTE = bytes.fromhex("b9")
-    GENESIS_HASH = ('83df26d5a83042cda090d7469e481f3c353844ded0b2f7a32fbebf6f8ae1cd79')
+    GENESIS_HASH = ('83df26d5a83042cda090d7469e481f3c'
+                    '353844ded0b2f7a32fbebf6f8ae1cd79')
     STATIC_BLOCK_HEADERS = False
     MTP_EXTRA_BYTES = 100
     DESERIALIZER = lib_tx.DeserializerZcoin
@@ -2346,7 +2344,7 @@ class ZcoinTestnet(Zcoin):
     @classmethod
     def header_hash(cls, header):
         '''Given a header return hash'''
-        return double_sha256(header[:cls.BASIC_HEADER_SIZE + cls.MTP_EXTRA_BYTES])
+        return double_sha256(header[:cls.BASIC_HEADER_SIZE
+                                     + cls.MTP_EXTRA_BYTES])
 
-
-    
+   
