@@ -2322,10 +2322,9 @@ class Zcoin(Coin):
     WIF_BYTE = bytes.fromhex("d2")
     GENESIS_HASH = ('4381deb85b1b2c9843c222944b616d99'
                     '7516dcbd6a964e1eaf0def0830695233')
-    TX_COUNT = 667154
-    TX_COUNT_HEIGHT = 100266
-    TX_PER_BLOCK = 4000 # 2000 for 1MB block
-    IRC_PREFIX = None
+    TX_COUNT = 1
+    TX_COUNT_HEIGHT = 1
+    TX_PER_BLOCK = 1
     RPC_PORT = 8888
     REORG_LIMIT = 5000
     PEER_DEFAULT_PORTS = {'t': '50001', 's': '50002'}
