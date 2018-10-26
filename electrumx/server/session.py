@@ -108,7 +108,8 @@ class SessionGroup(object):
 class SessionManager(object):
     '''Holds global state about all sessions.'''
 
-    def __init__(self, env, db, bp, daemon, mempool, shutdown_event):
+    def __init__(self, env, db, bp, daemon, mempool, notifications,
+                 shutdown_event):
         env.max_send = max(350000, env.max_send)
         self.env = env
         self.db = db
@@ -135,6 +136,8 @@ class SessionManager(object):
         # Event triggered when electrumx is listening for incoming requests.
         self.server_listening = Event()
         self.session_event = Event()
+        # Tell sessions about subscription changes
+        notifications.add_callback(self._notify_sessions)
 
         # Set up the RPC request handlers
         cmds = ('add_peer daemon_url disconnect getinfo groups log peers '
@@ -343,8 +346,6 @@ class SessionManager(object):
         '''Refresh the cached header subscription responses to be for height,
         and record that as notified_height.
         '''
-        # Paranoia: a reorg could race and leave db_height lower
-        height = min(height, self.db.db_height)
         electrum, raw = await self._electrum_and_raw_headers(height)
         self.hsub_results = (electrum, {'hex': raw.hex(), 'height': height})
         self.notified_height = height
@@ -476,7 +477,7 @@ class SessionManager(object):
 
     # --- External Interface
 
-    async def serve(self, notifications, event):
+    async def serve(self, event):
         '''Start the RPC server if enabled.  When the event is triggered,
         start TCP and SSL servers.'''
         try:
@@ -498,8 +499,6 @@ class SessionManager(object):
             if self.env.drop_client is not None:
                 self.logger.info('drop clients matching: {}'
                                  .format(self.env.drop_client.pattern))
-            # Start notifications; initialize hsub_results
-            await notifications.start(self.db.db_height, self._notify_sessions)
             await self._start_external_servers()
             # Peer discovery should start after the external servers
             # because we connect to ourself
@@ -560,7 +559,8 @@ class SessionManager(object):
         '''Notify sessions about height changes and touched addresses.'''
         height_changed = height != self.notified_height
         if height_changed:
-            await self._refresh_hsub_results(height)
+            # Paranoia: a reorg could race and leave db_height lower
+            await self._refresh_hsub_results(min(height, self.db.db_height))
             # Invalidate our history cache for touched hashXs
             hc = self.history_cache
             for hashX in set(hc).intersection(touched):
