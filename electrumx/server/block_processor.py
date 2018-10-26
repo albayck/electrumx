@@ -416,7 +416,6 @@ class BlockProcessor(object):
             for txin in tx.inputs:
                 if is_gen_outpoint(txin.prev_hash, txin.prev_idx):
                     continue
-
                 cache_value = spend_utxo(txin.prev_hash, txin.prev_idx)
                 undo_info_append(cache_value)
                 append_hashX(cache_value[:-12])
@@ -497,11 +496,10 @@ class BlockProcessor(object):
             for txin in reversed(tx.inputs):
                 if is_gen_outpoint(txin.prev_hash, txin.prev_idx):
                     continue
-
                 n -= undo_entry_len
                 undo_item = undo_info[n:n + undo_entry_len]
                 put_utxo(txin.prev_hash + s_pack('<H', txin.prev_idx),
-                            undo_item)
+                         undo_item)
                 touched.add(undo_item[:-12])
 
         assert n == 0
@@ -630,6 +628,8 @@ class BlockProcessor(object):
         if first_sync:
             self.logger.info(f'{electrumx.version} synced to '
                              f'height {self.height:,d}')
+        # Initialise the notification framework
+        await self.notifications.on_block(set(), self.height)
         # Reopen for serving
         await self.db.open_for_serving()
 
