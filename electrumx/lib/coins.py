@@ -2308,14 +2308,25 @@ class Zcoin(Coin):
     P2PKH_VERBYTE = bytes.fromhex("52")
     P2SH_VERBYTES = [bytes.fromhex("07")]
     WIF_BYTE = bytes.fromhex("d2")
-    GENESIS_HASH = ('4381deb85b1b2c9843c222944b616d99'
-                    '7516dcbd6a964e1eaf0def0830695233')
+    GENESIS_HASH = ('4381deb85b1b2c9843c222944b616d997516dcbd6a964e1eaf0def0830695233')
     TX_COUNT = 1
     TX_COUNT_HEIGHT = 1
     TX_PER_BLOCK = 1
     RPC_PORT = 8888
     REORG_LIMIT = 5000
     PEER_DEFAULT_PORTS = {'t': '50001', 's': '50002'}
+    MTP_SWITCH_TIME = 1544443200  # 2018 December 10th 12:00 UTC
+    DESERIALIZER = lib_tx.DeserializerZcoin
+    @classmethod
+    def block_header(cls, block, height):
+        '''Return the block header bytes'''
+        deserializer = cls.DESERIALIZER(block)
+        return deserializer.read_header(height, cls.BASIC_HEADER_SIZE, cls.MTP_SWITCH_TIME)
+
+    @classmethod
+    def header_hash(cls, header):
+        '''Given a header return hash'''
+        return double_sha256(header[:cls.BASIC_HEADER_SIZE + cls.MTP_EXTRA_BYTES])
 
 
 class ZcoinTestnet(Zcoin):
@@ -2326,25 +2337,11 @@ class ZcoinTestnet(Zcoin):
     P2PKH_VERBYTE = bytes.fromhex("41")
     P2SH_VERBYTES = [bytes.fromhex("b2")]
     WIF_BYTE = bytes.fromhex("b9")
-    GENESIS_HASH = ('83df26d5a83042cda090d7469e481f3c'
-                    '353844ded0b2f7a32fbebf6f8ae1cd79')
+    GENESIS_HASH = ('1e3487fdb1a7d46dac3e8f3e58339c6eff54abf6aef353485f3ed64250a35e89')
     STATIC_BLOCK_HEADERS = False
     MTP_EXTRA_BYTES = 100
-    DESERIALIZER = lib_tx.DeserializerZcoin
     REORG_LIMIT = 8000
     RPC_PORT = 18888
-    PEER_DEFAULT_PORTS = {'t': '51001', 's': '51002'}
-
-    @classmethod
-    def block_header(cls, block, height):
-        '''Return the block header bytes'''
-        deserializer = cls.DESERIALIZER(block)
-        return deserializer.read_header(height, cls.BASIC_HEADER_SIZE)
-
-    @classmethod
-    def header_hash(cls, header):
-        '''Given a header return hash'''
-        return double_sha256(header[:cls.BASIC_HEADER_SIZE
-                                     + cls.MTP_EXTRA_BYTES])
+    MTP_SWITCH_TIME = 1539172800 # October 10, 2018 12:00:00 PM
 
    
