@@ -2320,8 +2320,7 @@ class Zcoin(Coin):
     P2PKH_VERBYTE = bytes.fromhex("52")
     P2SH_VERBYTES = [bytes.fromhex("07")]
     WIF_BYTE = bytes.fromhex("d2")
-    GENESIS_HASH = ('4381deb85b1b2c9843c222944b616d99'
-                    '7516dcbd6a964e1eaf0def0830695233')
+    GENESIS_HASH = ('4381deb85b1b2c9843c222944b616d997516dcbd6a964e1eaf0def0830695233')
     TX_COUNT = 1
     TX_COUNT_HEIGHT = 1
     TX_PER_BLOCK = 1
@@ -2336,7 +2335,6 @@ class Zcoin(Coin):
         '''Return the block header bytes'''
         deserializer = cls.DESERIALIZER(block)
         return deserializer.read_header(height, cls.BASIC_HEADER_SIZE, cls.MTP_SWITCH_TIME)
-
     @classmethod
     def header_hash(cls, header):
         '''Given a header return hash'''

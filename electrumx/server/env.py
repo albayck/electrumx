@@ -41,8 +41,8 @@ class Env(EnvBase):
             self.coin = coin
         else:
             coin_name = self.required('COIN').strip()
-            network = self.default('NET', 'mainnet').strip()
-            self.coin = Coin.lookup_coin_class(coin_name, network)
+            self.network = self.default('NET', 'mainnet').strip()
+            self.coin = Coin.lookup_coin_class(coin_name, self.network)
         self.cache_MB = self.integer('CACHE_MB', 1200)
         self.host = self.default('HOST', 'localhost')
         self.reorg_limit = self.integer('REORG_LIMIT', self.coin.REORG_LIMIT)
