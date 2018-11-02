@@ -2153,6 +2153,7 @@ class Zcoin(Coin):
     REORG_LIMIT = 5000
     PEER_DEFAULT_PORTS = {'t': '50001', 's': '50002'}
     MTP_SWITCH_TIME = 1544443200  # 2018 December 10th 12:00 UTC
+    MTP_EXTRA_BYTES = 100
     DESERIALIZER = lib_tx.DeserializerZcoin
     @classmethod
     def block_header(cls, block, height):
@@ -2174,9 +2175,8 @@ class ZcoinTestnet(Zcoin):
     P2PKH_VERBYTE = bytes.fromhex("41")
     P2SH_VERBYTES = [bytes.fromhex("b2")]
     WIF_BYTE = bytes.fromhex("b9")
-    GENESIS_HASH = ('1e3487fdb1a7d46dac3e8f3e58339c6eff54abf6aef353485f3ed64250a35e89')
-    STATIC_BLOCK_HEADERS = False
-    MTP_EXTRA_BYTES = 100
+    GENESIS_HASH = '1e3487fdb1a7d46dac3e8f3e58339c6e' \
+                   'ff54abf6aef353485f3ed64250a35e89'
     REORG_LIMIT = 8000
     RPC_PORT = 18888
     PEER_DEFAULT_PORTS = {'t': '51001', 's': '51002'}
