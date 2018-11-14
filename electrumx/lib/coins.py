@@ -2346,4 +2346,4 @@ class ZcoinTestnet(Zcoin):
     PEER_DEFAULT_PORTS = {'t': '51001', 's': '51002'}
     MTP_SWITCH_TIME = 1539172800 # October 10, 2018 12:00:00 PM
 
-   
+
