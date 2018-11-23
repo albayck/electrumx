@@ -18,7 +18,6 @@ from functools import partial
 from aiorpcx import TaskGroup, run_in_thread
 
 import electrumx
-from electrumx.lib.tx import is_gen_outpoint
 from electrumx.server.daemon import DaemonError
 from electrumx.lib.hash import hash_to_hex_str, HASHX_LEN
 from electrumx.lib.util import chunks, class_logger
@@ -628,8 +627,6 @@ class BlockProcessor(object):
         if first_sync:
             self.logger.info(f'{electrumx.version} synced to '
                              f'height {self.height:,d}')
-        # Initialise the notification framework
-        await self.notifications.on_block(set(), self.height)
         # Reopen for serving
         await self.db.open_for_serving()
 
@@ -810,9 +807,3 @@ class LTORBlockProcessor(BlockProcessor):
                     add_touched(cache_value[:-12])
 
         self.tx_count -= len(txs)
-=======
-        return start, count
->>>>>>> Improve generation inputs handling (@maff1989 improvements) (#3)
-=======
-        return start, count
->>>>>>> Revert "Improve generation inputs handling (@maff1989 improvements) (#3)"

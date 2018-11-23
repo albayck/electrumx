@@ -33,8 +33,7 @@ class Notifications(object):
     def __init__(self):
         self._touched_mp = {}
         self._touched_bp = {}
-        self._highest_block = 0
-        self._notify_funcs = []
+        self._highest_block = -1
 
     async def _maybe_notify(self):
         tmp, tbp = self._touched_mp, self._touched_bp
@@ -55,8 +54,13 @@ class Notifications(object):
             touched.update(tbp.pop(old))
         await self.notify(height, touched)
 
-    def add_callback(self, notify_func):
-        self._notify_funcs.append(notify_func)
+    async def notify(self, height, touched):
+        pass
+
+    async def start(self, height, notify_func):
+        self._highest_block = height
+        self.notify = notify_func
+        await self.notify(height, set())
 
     async def on_mempool(self, touched, height):
         self._touched_mp[height] = touched
@@ -97,18 +101,17 @@ class Controller(ServerBase):
         db = DB(env)
         bp = BlockProcessor(env, db, daemon, notifications)
 
-        # Set ourselves up to implement the MemPoolAPI
-        self.height = daemon.height
-        self.cached_height = daemon.cached_height
-        self.mempool_hashes = daemon.mempool_hashes
-        self.raw_transactions = daemon.getrawtransactions
-        self.lookup_utxos = db.lookup_utxos
-        self.on_mempool = notifications.on_mempool
-        MemPoolAPI.register(Controller)
-        mempool = MemPool(env.coin, self)
+        # Set notifications up to implement the MemPoolAPI
+        notifications.height = daemon.height
+        notifications.cached_height = daemon.cached_height
+        notifications.mempool_hashes = daemon.mempool_hashes
+        notifications.raw_transactions = daemon.getrawtransactions
+        notifications.lookup_utxos = db.lookup_utxos
+        MemPoolAPI.register(Notifications)
+        mempool = MemPool(env.coin, notifications)
 
         session_mgr = SessionManager(env, db, bp, daemon, mempool,
-                                     notifications, shutdown_event)
+                                     shutdown_event)
 
         # Test daemon authentication, and also ensure it has a cached
         # height.  Do this before entering the task group.
