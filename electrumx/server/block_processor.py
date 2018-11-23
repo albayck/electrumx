@@ -414,7 +414,7 @@ class BlockProcessor(object):
 
             # Spend the inputs
             for txin in tx.inputs:
-                if txin.is_generation:
+                if txin.is_generation():
                     continue
                 cache_value = spend_utxo(txin.prev_hash, txin.prev_idx)
                 undo_info_append(cache_value)
@@ -494,11 +494,7 @@ class BlockProcessor(object):
 
             # Restore the inputs
             for txin in reversed(tx.inputs):
-<<<<<<< e1817a826d788c56c6efb8737163ed634ee6c5d9
                 if txin.is_generation():
-=======
-                if is_gen_outpoint(txin.prev_hash, txin.prev_idx):
->>>>>>> Revert "Improve generation inputs handling (@maff1989 improvements) (#3)"
                     continue
                 n -= undo_entry_len
                 undo_item = undo_info[n:n + undo_entry_len]
@@ -685,8 +681,6 @@ class DecredBlockProcessor(BlockProcessor):
             # A reorg in Decred can invalidate the previous block
             start -= 1
             count += 1
-<<<<<<< b057b263985dc3ea8bce1574af1e84a280b4e1b6
-<<<<<<< bf279ceaea588de46d94e2ce93f38f797b2af9dc
         return start, count
 
 
