@@ -2266,6 +2266,7 @@ class tBitg(Bitg):
         '000008467c3a9c587533dea06ad9380cded3ed32f9742a6c0c1aebc21bf2bc9b')
     RPC_PORT = 19332
 
+
 class CivX(Coin):
     NAME = "CivX"
     SHORTNAME = "CIVX"
