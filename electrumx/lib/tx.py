@@ -41,19 +41,6 @@ ZERO = bytes(32)
 MINUS_1 = 4294967295
 
 
-def is_gen_outpoint(hash, index):
-    '''Test if an outpoint is a generation/coinbase like'''
-    return index == MINUS_1 and hash == ZERO
-
-def is_gen_outpoint(hash, index):
-    '''Test if an outpoint is a generation/coinbase like'''
-    return index == MINUS_1 and hash == ZERO
-
-
-def is_gen_outpoint(hash, index):
-    '''Test if an outpoint is a generation/coinbase like'''
-    return index == MINUS_1 and hash == ZERO
-
 class Tx(namedtuple("Tx", "version inputs outputs locktime")):
     '''Class representing a transaction.'''
 
@@ -652,18 +639,3 @@ class DeserializerDecred(Deserializer):
             expiry,
             witness
         ), tx_hash, self.cursor - start
-
-
-class DeserializerSmartCash(Deserializer):
-
-    @staticmethod
-    def keccak(data):
-        from Cryptodome.Hash import keccak
-        keccak_hash = keccak.new(digest_bits=256)
-        keccak_hash.update(data)
-        return keccak_hash.digest()
-
-    def read_tx_and_hash(self):
-        from electrumx.lib.hash import sha256
-        start = self.cursor
-        return self.read_tx(), sha256(self.binary[start:self.cursor])

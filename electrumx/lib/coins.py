@@ -43,11 +43,9 @@ from electrumx.lib.hash import Base58, hash160, double_sha256, hash_to_hex_str
 from electrumx.lib.hash import HASHX_LEN, hex_str_to_hash
 from electrumx.lib.script import ScriptPubKey, OpCodes
 import electrumx.lib.tx as lib_tx
-import electrumx.lib.tx_dash as lib_tx_dash
 import electrumx.server.block_processor as block_proc
 import electrumx.server.daemon as daemon
-from electrumx.server.session import (ElectrumX, DashElectrumX,
-                                      SmartCashElectrumX)
+from electrumx.server.session import ElectrumX, DashElectrumX
 
 
 Block = namedtuple("Block", "raw header transactions")
@@ -369,29 +367,20 @@ class HOdlcoin(Coin):
 class BitcoinCash(BitcoinMixin, Coin):
     NAME = "BitcoinCash"
     SHORTNAME = "BCH"
-    TX_COUNT = 267318795
-    TX_COUNT_HEIGHT = 557037
+    TX_COUNT = 246362688
+    TX_COUNT_HEIGHT = 511484
     TX_PER_BLOCK = 400
     PEERS = [
+        'electroncash.cascharia.com s50002',
         'bch.electrumx.cash s t',
-        'sv1.hsmiths.com t60003 s60004',
-        'satoshi.vision.cash s',
-        'electroncash.cascharia.com s t',
-    ]
-
-
-class BitcoinCashABC(BitcoinMixin, Coin):
-    NAME = "BitcoinCashABC"
-    SHORTNAME = "BCH"
-    TX_COUNT = 265479628
-    TX_COUNT_HEIGHT = 556592
-    TX_PER_BLOCK = 400
-    PEERS = [
-        'bch.imaginary.cash s t',
+        'bccarihace4jdcnt.onion t52001 s52002',
+        'abc1.hsmiths.com t60001 s60002',
+        'electroncash.checksum0.com s t',
+        'electrumx-cash.1209k.com s t',
+        'electrum.leblancnet.us t50011 s50012',
         'electroncash.dk s t',
-        'wallet.satoshiscoffeehouse.com s t',
+        'electrum.imaginary.cash s t',
     ]
-    BLOCK_PROCESSOR = block_proc.LTORBlockProcessor
 
 
 class BitcoinSegwit(BitcoinMixin, Coin):
@@ -406,6 +395,7 @@ class BitcoinSegwit(BitcoinMixin, Coin):
         'E-X.not.fyi s t',
         'elec.luggs.co s443',
         'electrum.vom-stausee.de s t',
+        'electrum3.hachre.de s t',
         'electrum.hsmiths.com s t',
         'helicarrier.bauerj.eu s t',
         'hsmiths4fyqlw5xw.onion s t',
@@ -915,7 +905,6 @@ class Dash(Coin):
     ]
     SESSIONCLS = DashElectrumX
     DAEMON = daemon.DashDaemon
-    DESERIALIZER = lib_tx_dash.DeserializerDash
 
     @classmethod
     def header_hash(cls, header):
@@ -2094,7 +2083,6 @@ class Minexcoin(EquihashMixin, Coin):
     RPC_PORT = 8022
     CHUNK_SIZE = 960
     PEERS = [
-        'electrumx.xpresit.net s t',
         'elex01-ams.turinex.eu s t',
         'eu.minexpool.nl s t'
     ]

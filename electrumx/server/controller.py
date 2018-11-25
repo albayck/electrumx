@@ -82,8 +82,8 @@ class Controller(ServerBase):
         '''Start the RPC server and wait for the mempool to synchronize.  Then
         start serving external clients.
         '''
-        if not (0, 10, 1) <= aiorpcx_version < (0, 11):
-            raise RuntimeError('aiorpcX version 0.10.x, x >= 1, required')
+        if not (0, 10, 0) <= aiorpcx_version < (0, 11):
+            raise RuntimeError('aiorpcX version 0.10.x required')
 
         env = self.env
         min_str, max_str = env.coin.SESSIONCLS.protocol_min_max_strings()
@@ -118,17 +118,9 @@ class Controller(ServerBase):
         await daemon.height()
 
         caught_up_event = Event()
-<<<<<<< 84b8b45bc34af0b43dfc11b737afb82f04e1ca62
         mempool_event = Event()
 
         async def wait_for_catchup():
-=======
-        serve_externally_event = Event()
-        synchronized_event = Event()
-        async with TaskGroup() as group:
-            await group.spawn(session_mgr.serve(serve_externally_event))
-            await group.spawn(bp.fetch_and_process_blocks(caught_up_event))
->>>>>>> Updated from master
             await caught_up_event.wait()
             await group.spawn(db.populate_header_merkle_cache())
             await group.spawn(mempool.keep_synchronized(mempool_event))
