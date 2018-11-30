@@ -28,6 +28,7 @@
 '''Transaction-related classes and functions.'''
 
 from collections import namedtuple
+import os, sys, re, json
 
 from electrumx.lib.hash import sha256, double_sha256, hash_to_hex_str
 from electrumx.lib.script import OpCodes
@@ -291,22 +292,6 @@ class DeserializerAuxPow(Deserializer):
         self.cursor = start
         return self._read_nbytes(header_end)
 
-
-class DeserializerZcoin(Deserializer):
-    def read_header(self, height, static_header_size, mtp_switch_time):
-        start = self.cursor
-        self.cursor += 68
-        time = self._read_le_uint32()  # nTime
-
-        if time >= mtp_switch_time:
-            self.cursor = start + \
-                          static_header_size  # Normal Block size 80 bytes
-            self.cursor += 198964             # nVersionMTP + mtpHashValue + mtpReserved[2] + mtpHashData
-            header_end = self.cursor
-        else:
-            header_end = static_header_size
-        self.cursor = start
-        return self._read_nbytes(header_end)
 
 class DeserializerAuxPowSegWit(DeserializerSegWit, DeserializerAuxPow):
     pass

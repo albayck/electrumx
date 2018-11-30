@@ -2319,18 +2319,38 @@ class Zcoin(Coin):
     RPC_PORT = 8888
     REORG_LIMIT = 5000
     PEER_DEFAULT_PORTS = {'t': '50001', 's': '50002'}
-    MTP_SWITCH_TIME = 1544443200  # 2018 December 10th 12:00 UTC
-    MTP_EXTRA_BYTES = 100
-    DESERIALIZER = lib_tx.DeserializerZcoin
+    MTP_HEADER_EXTRA_SIZE = 100
+    MTP_HEADER_DATA_SIZE = 198864
+    MTP_HEADER_DATA_START = Coin.BASIC_HEADER_SIZE + MTP_HEADER_EXTRA_SIZE
+    MTP_HEADER_DATA_END = MTP_HEADER_DATA_START + MTP_HEADER_DATA_SIZE
+    STATIC_BLOCK_HEADERS = False
+    DAEMON = daemon.ZcoinMtpDaemon
+
+    @classmethod
+    def is_mtp(cls, header):
+        from electrumx.lib.util import unpack_le_uint32_from, hex_to_bytes
+        if isinstance(header, str):
+            nVersion, = unpack_le_uint32_from(hex_to_bytes(header[0:4*2]))
+        elif isinstance(header, bytes):
+            nVersion, = unpack_le_uint32_from(header[0:4])
+        else:
+            raise "Cannot handle the passed type"
+        return nVersion & 0x1000
+
     @classmethod
     def block_header(cls, block, height):
-        '''Return the block header bytes'''
-        deserializer = cls.DESERIALIZER(block)
-        return deserializer.read_header(height, cls.BASIC_HEADER_SIZE, cls.MTP_SWITCH_TIME)
+        sz = cls.BASIC_HEADER_SIZE
+        if cls.is_mtp(block):
+            sz += cls.MTP_HEADER_EXTRA_SIZE
+        return block[:sz]
+
     @classmethod
     def header_hash(cls, header):
-        '''Given a header return hash'''
-        return double_sha256(header[:cls.BASIC_HEADER_SIZE + cls.MTP_EXTRA_BYTES])
+        sz = cls.BASIC_HEADER_SIZE
+        if cls.is_mtp(header):
+            sz += cls.MTP_HEADER_EXTRA_SIZE
+        return double_sha256(header[:sz])
+
 
 class ZcoinTestnet(Zcoin):
     SHORTNAME = "tXZC"
@@ -2344,6 +2364,3 @@ class ZcoinTestnet(Zcoin):
                    'ff54abf6aef353485f3ed64250a35e89'
     REORG_LIMIT = 8000
     RPC_PORT = 18888
-    PEER_DEFAULT_PORTS = {'t': '51001', 's': '51002'}
-    MTP_SWITCH_TIME = 1539172800 # October 10, 2018 12:00:00 PM
-
